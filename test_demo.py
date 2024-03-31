@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as ec #beklenen koşu
 from selenium.webdriver.common.action_chains import ActionChains 
 import pytest
 import openpyxl
+from constants.globalConstants import *
 
 class Test_Demo:
     def deneme():
@@ -14,7 +15,7 @@ class Test_Demo:
     def setup_method(self):
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
-        self.driver.get("https://www.saucedemo.com/")
+        self.driver.get(BASE_URL)
 
     #Her test bitiminde calısır
     def teardown_method(self):
@@ -42,17 +43,16 @@ class Test_Demo:
     
     @pytest.mark.parametrize("username,password",readInvalidDataFromExcel())
     def test_invalid_login(self,username,password):
-        userNameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"user-name")))
-        passwordInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"password")))
+        userNameInput = self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput = self.waitForElelemetVisible((By.ID,password_id))
         userNameInput.send_keys(username)
         passwordInput.send_keys(password)
-        loginButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"login-button")))
+        loginButton = self.waitForElelemetVisible((By.ID,login_button_id))
         loginButton.click()
-        errorMessage =WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")))
-        assert errorMessage.text == "Epic sadface: Username and password do not match any user in this service"
+        errorMessage = self.waitForElelemetVisible((By.XPATH,errorMessage_InvalidXpath))
+        assert errorMessage.text == errorMessage_Invalidtext
     
     def test_valid_login(self):
-        self.driver.get("https://www.saucedemo.com/")
         userNameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"user-name")))
         passwordInput =WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"password")))
         actions = ActionChains(self.driver)
@@ -63,5 +63,8 @@ class Test_Demo:
         loginButton.click()
         baslik =WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.XPATH,"//*[@id='header_container']/div[1]/div[2]/div")))
         assert baslik.text == "Swag Labs"
+
+    def waitForElelemetVisible(self,locator,timeout=5):
+        WebDriverWait(self.driver,timeout).until(ec.visibility_of_element_located(locator))
 
         
