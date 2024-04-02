@@ -1,0 +1,17 @@
+{
+    "invalid_credentials":[
+        {
+            "username": "ahmet",
+            "password":"12345" 
+        },
+        {
+            "username": "secret_sauce",
+            "password":"naber"
+        },
+        {
+            "username": "standart_user", 
+            "password":"secret_sauce"
+        }
+    ]
+
+}

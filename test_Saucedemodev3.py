@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pytest
 import openpyxl
 from constants.globalConstants import *
+import json 
 
 class Test_Odev3:
       def setup_method(self):
@@ -18,59 +19,59 @@ class Test_Odev3:
         self.driver.quit()
 
       def test_blank_login(self):
-        userNameInput=self.waitForElelemetVisible(By.ID,username_id)
-        passwordInput=self.waitForElelemetVisible(By.ID,password_id)
-        loginButton=self.waitForElelemetVisible(By.ID,login_button_id)
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
         actions=ActionChains(self.driver)
         actions.send_keys_to_element(userNameInput,userNameBlank)
         actions.send_keys_to_element(passwordInput,passwordBlank)
         actions.click(loginButton)
         actions.perform() 
-        errorMessage=self.waitForElelemetVisible(By.XPATH,errorMessage_blankXpath)
-        assert errorMessage.text==errorMessage_blankXpath
+        errorMessage=self.waitForElelemetVisible((By.XPATH,errorMessage_blankXpath))
+        assert errorMessage.text== errorMessage_blanktext
     
       def test_blank_password_login(self):
-        userNameInput=self.waitForElelemetVisible(By.ID,username_id)
-        passwordInput=self.waitForElelemetVisible(By.ID,password_id)
-        loginButton=self.waitForElelemetVisible(By.ID,login_button_id)
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
         actions=ActionChains(self.driver)
         actions.send_keys_to_element(userNameInput,userName)
         actions.send_keys_to_element(passwordInput,passwordBlank)
         actions.click(loginButton)
         actions.perform() 
-        errorMessage=self.waitForElelemetVisible(By.XPATH,errorMessage_blankPasswordXpath)
+        errorMessage=self.waitForElelemetVisible((By.XPATH,errorMessage_blankPasswordXpath))
         assert errorMessage.text==errorMessage_blankPasswordtext
         
       def test_lockedUser_login(self):
-        userNameInput=self.waitForElelemetVisible(By.ID,username_id)
-        passwordInput=self.waitForElelemetVisible(By.ID,password_id)
-        loginButton=self.waitForElelemetVisible(By.ID,login_button_id)
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
         actions=ActionChains(self.driver)
         actions.send_keys_to_element(userNameInput,lokedUserName)
         actions.send_keys_to_element(passwordInput,validPassword)
         actions.click(loginButton)
         actions.perform() 
-        errorMessage=self.waitForElelemetVisible(By.XPATH,errorMessage_lokedUserdXpath)
+        errorMessage=self.waitForElelemetVisible((By.XPATH,errorMessage_lokedUserdXpath))
         assert errorMessage.text==errorMessage_lokedUsertext
 
       def test_valid_login(self):
-        userNameInput=self.waitForElelemetVisible(By.ID,username_id)
-        passwordInput=self.waitForElelemetVisible(By.ID,password_id)
-        loginButton=self.waitForElelemetVisible(By.ID,login_button_id)
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
         actions=ActionChains(self.driver)
         actions.send_keys_to_element(userNameInput,validUserName)
         actions.send_keys_to_element(passwordInput,validPassword)
         actions.click(loginButton)
         actions.perform()
-        baslik=self.waitForElelemetVisible(By.XPATH,baslikXpath)
+        baslik=self.waitForElelemetVisible((By.XPATH,baslikXpath))
         assert baslik.text==baslikText
-        listOfProducts=self.waitForElelemetVisible(By.XPATH,productListXpat)
-        assert len(listOfProducts)==6
+        listOfProducts= self.waitForAllElelemetVisible((By.CSS_SELECTOR,productListCss))
+        assert len(listOfProducts)==productListLen
 
       
       def readInvalidDataFromExcel():
         excelFile = openpyxl.load_workbook("data\invalidLogin.xlsx")
-        sheet = excelFile["Sayfa1"]
+        sheet = excelFile["Sheet1"]
         rows = sheet.max_row #kacıncı satıra kadar benim verim var
         data = []
         for i in range(2,rows+1):
@@ -81,82 +82,104 @@ class Test_Odev3:
     
       @pytest.mark.parametrize("username,password",readInvalidDataFromExcel())  
       def test_invalid_login(self,username,password):
-        userNameInput=self.waitForElelemetVisible(By.ID,username_id)
-        passwordInput=self.waitForElelemetVisible(By.ID,password_id)
-        loginButton=self.waitForElelemetVisible(By.ID,login_button_id)
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
         actions=ActionChains(self.driver)
         actions.send_keys_to_element(userNameInput,username)
         actions.send_keys_to_element(passwordInput,password)
         actions.click(loginButton)
         actions.perform()
-        errorMesssage=self.waitForElelemetVisible(By.XPATH,errorMessage_InvalidXpath)
-        WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")))
+        errorMesssage=self.waitForElelemetVisible((By.XPATH,errorMessage_InvalidXpath))
         assert errorMesssage.text==errorMessage_Invalidtext
+
+      def readInvalidDataFromJSON(json_file_path):
+        with open(json_file_path, 'r') as file:
+          data = json.load(file)
+          invalid_users = data.get('invalid_credentials', [])
+          return [(user.get('username'), user.get('password')) for user in invalid_users]
+      
+      @pytest.mark.parametrize("username,password",readInvalidDataFromJSON("data\invalidcredentails.json"))  
+      def test_invalid_login2(self,username,password):
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
+        actions=ActionChains(self.driver)
+        actions.send_keys_to_element(userNameInput,username)
+        actions.send_keys_to_element(passwordInput,password)
+        actions.click(loginButton)
+        actions.perform()
+        errorMesssage=self.waitForElelemetVisible((By.XPATH,errorMessage_InvalidXpath))
+        assert errorMesssage.text==errorMessage_Invalidtext
+
 
     
       #Sepete başarılı bir şekilde ürün eklenmesinin testi.
       def test_addToCartProduct(self):
-        userNameInput=self.waitForElelemetVisible(By.ID,username_id)
-        passwordInput=self.waitForElelemetVisible(By.ID,password_id)
-        loginButton=self.waitForElelemetVisible(By.ID,login_button_id)
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
         userNameInput.send_keys(validUserName)
         passwordInput.send_keys(validPassword)
         loginButton.click()
-        product = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"add-to-cart-test.allthethings()-t-shirt-(red)")))
+        product = self.waitForElelemetVisible((By.ID,productId))
         actions =ActionChains(self.driver)
         actions.click(product)
         actions.perform()
-        shoppingCartBadge = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CLASS_NAME,"shopping_cart_badge")))
-        assert shoppingCartBadge.text=="1"
+        shoppingCartBadge = self.waitForElelemetVisible((By.CLASS_NAME,cartBadgeClasName))
+        assert shoppingCartBadge.text==cartBadgeText
         
       #Sepete eklenen ürünün başarıyla silinmesi testi
       def test_removeProduct(self):
-        userNameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"user-name")))  
-        passwordInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"password")))
-        loginButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"login-button")))
-        userNameInput.send_keys("standard_user")
-        passwordInput.send_keys("secret_sauce")
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
+        userNameInput.send_keys(validUserName)
+        passwordInput.send_keys(validPassword)
         loginButton.click()
-        product1 = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"add-to-cart-test.allthethings()-t-shirt-(red)")))
+        product1 = self.waitForElelemetVisible((By.ID,productId))
         actions =ActionChains(self.driver)
         actions.click(product1)
         actions.perform()
-        shoppingCartBadge = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CLASS_NAME,"shopping_cart_badge")))
+        shoppingCartBadge = self.waitForElelemetVisible((By.CLASS_NAME,cartBadgeClasName))
         shoppingCartBadge.click()
-        productRemove = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID, "remove-test.allthethings()-t-shirt-(red)")))
+        productRemove = self.waitForElelemetVisible((By.ID,removeProductId))
         productRemove.click()
-        shoppingCartBadge = WebDriverWait(self.driver,5).until(ec.invisibility_of_element_located((By.CLASS_NAME,"shopping_cart_badge")))
+        shoppingCartBadge = self.waitForElelemetInvisible((By.CLASS_NAME,cartBadgeClasName))
         assert shoppingCartBadge
 
       #Satın alma işlemini başarılı bir şekilde tamamlayıp, teşekkür mesajının görüntülenmesi testi.
       def test_checkoutProduct(self):
-        userNameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"user-name")))  
-        passwordInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"password")))
-        loginButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"login-button")))
-        userNameInput.send_keys("standard_user")
-        passwordInput.send_keys("secret_sauce")
+        userNameInput=self.waitForElelemetVisible((By.ID,username_id))
+        passwordInput=self.waitForElelemetVisible((By.ID,password_id))
+        loginButton=self.waitForElelemetVisible((By.ID,login_button_id))
+        userNameInput.send_keys(validUserName)
+        passwordInput.send_keys(validPassword)
         loginButton.click()
-        product1 = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"add-to-cart-test.allthethings()-t-shirt-(red)")))
+        product1 = self.waitForElelemetVisible((By.ID,productId))
         actions =ActionChains(self.driver)
         actions.click(product1)
         actions.perform()
-        shoppingCartBadge = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CLASS_NAME,"shopping_cart_badge")))
+        shoppingCartBadge = self.waitForElelemetVisible((By.CLASS_NAME,cartBadgeClasName))
         shoppingCartBadge.click()
-        checkoutButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"checkout")))
+        checkoutButton = self.waitForElelemetVisible((By.ID,checkoutID))
         checkoutButton.click()
-        firstNameBox = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"first-name")))
-        lasttNameBox = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"last-name")))
-        postaCodeBox = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"postal-code")))
+        firstNameBox = self.waitForElelemetVisible((By.ID,firstNameID))
+        lasttNameBox = self.waitForElelemetVisible((By.ID,lastNameID))
+        postaCodeBox = self.waitForElelemetVisible((By.ID,postaCodeID))
         firstNameBox.send_keys("Emine")
         lasttNameBox.send_keys("Coskun")
         postaCodeBox.send_keys("34854")
-        continueButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"continue")))
+        continueButton = self.waitForElelemetVisible((By.ID,continueButtonID))
         continueButton.click()
-        finishButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"finish")))
+        finishButton = self.waitForElelemetVisible((By.ID,finishButtonID))
         finishButton.click()
-        messageSuccesfull = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.XPATH,"//*[@id='checkout_complete_container']/h2")))
-        assert messageSuccesfull.text == "Thank you for your order!"
+        messageSuccesfull = self.waitForElelemetVisible((By.XPATH,messageSuccesfullXpath))
+        assert messageSuccesfull.text == messageSuccesfullText
 
       def waitForElelemetVisible(self,locator,timeout=5):
         return WebDriverWait(self.driver,timeout).until(ec.visibility_of_element_located(locator))
-  
+      def waitForAllElelemetVisible(self,locators,timeout=5):
+        return WebDriverWait(self.driver,timeout).until(ec.visibility_of_all_elements_located(locators))
+      def waitForElelemetInvisible(self,locator,timeout=5):
+        return WebDriverWait(self.driver,timeout).until(ec.invisibility_of_element_located(locator))
