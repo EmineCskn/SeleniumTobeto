@@ -146,7 +146,7 @@ class Test_Odev2:
         finishButton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"finish")))
         finishButton.click()
         messageSuccesfull = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.XPATH,"//*[@id='checkout_complete_container']/h2")))
-        assert messageSuccesfull.text == "Thank you for your order!" 
+        assert messageSuccesfull.text == "Thank you for your order!"  
 
       
         
