@@ -18,5 +18,24 @@ errorMessage_lokedUsertext = "Epic sadface: Sorry, this user has been locked out
 validUserName = "standard_user"
 baslikXpath = "//div[@class='app_logo']"
 baslikText = "Swag Labs"
-productListXpat = "div[class='inventory_item']"
+productListCss = "div[class='inventory_item']"
+productId = "add-to-cart-test.allthethings()-t-shirt-(red)"
+cartBadgeClasName = "shopping_cart_badge"
+cartBadgeText = "1"
+removeProductId = "remove-test.allthethings()-t-shirt-(red)"
+productListLen = 6
+checkoutID = "checkout"
+firstNameID = "first-name"
+lastNameID = "last-name"
+postaCodeID = "postal-code"
+firstName = "Emine"
+lastName = "Coskun"
+postaCode = "34854"
+continueButtonID = "continue"
+finishButtonID = "finish"
+messageSuccesfullXpath = "//*[@id='checkout_complete_container']/h2"
+messageSuccesfullText = "Thank you for your order!"
+
+
+
 
