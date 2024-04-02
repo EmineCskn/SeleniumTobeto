@@ -99,6 +99,7 @@ class Test_Odev2:
         actions.perform()
         shoppingCartBadge = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CLASS_NAME,"shopping_cart_badge")))
         assert shoppingCartBadge.text=="1"
+        
       #Sepete eklenen ürünün başarıyla silinmesi testi
       def test_removeProduct(self):
         userNameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"user-name")))  
@@ -117,6 +118,7 @@ class Test_Odev2:
         productRemove.click()
         shoppingCartBadge = WebDriverWait(self.driver,5).until(ec.invisibility_of_element_located((By.CLASS_NAME,"shopping_cart_badge")))
         assert shoppingCartBadge
+
       #Satın alma işlemini başarılı bir şekilde tamamlayıp, teşekkür mesajının görüntülenmesi testi.
       def test_checkoutProduct(self):
         userNameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,"user-name")))  
