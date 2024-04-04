@@ -20,7 +20,7 @@ class TestTestblanklogin():
   
   def test_testblanklogin(self):
     self.driver.get("https://www.saucedemo.com/")
-    self.driver.set_window_size(1296, 688)
+    self.driver.maximize_window()
     WebDriverWait(self.driver, 5).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "*[data-test=\"username\"]")))
     WebDriverWait(self.driver, 5).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "*[data-test=\"password\"]")))
     WebDriverWait(self.driver, 5).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "*[data-test=\"login-button\"]")))
